@@ -1,33 +1,43 @@
 #!/usr/bin/env python3
 
-from autobahn.twisted.websocket import WebSocketClientProtocol
 import json
+
+from autobahn.twisted.websocket import WebSocketClientProtocol
 
 class ClientProtocol(WebSocketClientProtocol):
 
 	def __init__(self):
-		self.subscribeMessage = {
+		self.subscribeMessage =	{
 			'type': 'subscribe',
-			'product_ids': [
-				'BTC-USD',
-			],
 			'channels': [
-				'matches',
+				{
+					'name': 'matches',
+					'product_ids': [
+						'BTC-USD'
+					]
+				}
 			]
 		}
 
 	def onConnect(self, response):
-		print('Server connected: {0}'.format(response.peer))
+		print('Server connected: {}'.format(response.peer))
 
 	def onOpen(self):
 		print('Server connection opened')
 		self.sendMessage(json.dumps(self.subscribeMessage).encode('utf8'))
-	
+
 	def onMessage(self, payload, isBinary):
-		if isBinary:
-			print('Binary message received: {0} bytes'.format(len(payload)))
+		payload = json.loads(payload.decode('utf8'))
+		if payload['type'] == 'match':
+			self.parseMatchResponse(payload)
 		else:
-			print('Text message received: {0}'.format(payload.decode('utf8')))
+			print(payload)
 	
 	def onClose(self, wasClean, code, reason):
-		print('Websocket connection closed: {0}'.format(reason))
+		if wasClean:
+			print('Websocket connection closed cleanly: {}'.format(reason))
+		else:
+			print('Error... websocket connection closed uncleanly: {}'.format(reason))
+	
+	def parseMatchResponse(self, payload):
+		print('Price: {}\tSide: {}'.format(payload['price'], payload['side']))
