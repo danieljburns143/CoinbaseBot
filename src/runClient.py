@@ -1,17 +1,13 @@
 #!/usr/bin/env python3
 
+
 from ClientProtocol import *
-
-import json
-
-from twisted.internet import reactor
-from autobahn.twisted.websocket import WebSocketClientFactory, \
-	WebSocketClientProtocol, connectWS
+from Client import *
 
 if __name__ == '__main__':
 
-	factory = WebSocketClientFactory('wss://ws-feed.pro.coinbase.com')
-	factory.protocol = ClientProtocol
+	webSocketFeedUrl = 'wss://ws-feed.pro.coinbase.com'
 
-	connectWS(factory)
-	reactor.run()
+	client = Client(ClientProtocol, webSocketFeedUrl)
+
+	client.startClient()
