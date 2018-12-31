@@ -4,7 +4,7 @@ import json
 
 from autobahn.twisted.websocket import WebSocketClientProtocol
 
-class ClientProtocol(WebSocketClientProtocol):
+class WebSocketClientProtocol(WebSocketClientProtocol):
 
 	def __init__(self):
 		self.subscribeMessage =	{
